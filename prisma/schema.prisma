@@ -1,0 +1,265 @@
+// Graveyard — Schema de dados do memorial de projetos mortos
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Enums
+// ─────────────────────────────────────────────────────────────────
+
+enum ProjectType {
+  MICRO_SAAS
+  PERSONAL_APP
+  STARTUP
+  GAME
+  BLOG
+  TOOL
+  EXTENSION
+  COMMUNITY
+  LIBRARY
+  API
+  DESIGN_PROJECT
+  CONTENT
+  OTHER
+}
+
+// Estágio do ciclo de vida do projeto no momento da morte
+enum LifecycleStage {
+  IDEA        // Nunca saiu do papel
+  SKETCH      // Wireframes e esboços
+  PROTOTYPE   // Algo funcionando minimamente
+  MVP         // Versão mínima lançada
+  BETA        // Com usuários reais em teste
+  LAUNCHED    // Foi ao ar e estava rodando
+  HIATUS      // Em pausa sem data de retorno
+}
+
+enum CauseOfDeath {
+  NO_TIME
+  TOO_COMPLEX
+  LOST_INTEREST
+  NO_MONEY
+  SCOPE_CREEP
+  NO_MARKET
+  BAD_TIMING
+  BURNOUT
+  WRONG_TECH
+  LIFE_CHANGE
+  BETTER_ALTERNATIVE
+  COMPETITION
+  TECHNICAL_DEBT
+  TEAM_SPLIT
+  ACQUIRED    // Absorvido por outro produto ou empresa
+  OTHER
+}
+
+enum EmotionalWeight {
+  LIGHT
+  NOSTALGIC
+  HEAVY
+  HAUNTING
+  LIBERATING
+  BITTERSWEET
+}
+
+enum ResurrectionPotential {
+  NONE
+  LOW
+  MEDIUM
+  HIGH
+  INEVITABLE
+}
+
+enum Visibility {
+  PUBLIC        // Aparece em listagens públicas
+  UNLISTED      // Acessível via link direto, não listado
+  PRIVATE       // Visível apenas para o criador
+}
+
+enum ArtifactType {
+  SCREENSHOT
+  DESIGN        // Arquivo de design (Figma, Sketch, etc.)
+  CODE_REPO
+  DOCUMENT
+  VIDEO
+  AUDIO
+  PRESENTATION
+  PROTOTYPE
+  LINK          // Referência externa sem arquivo
+  NOTE
+  OTHER
+}
+
+enum LessonCategory {
+  TECHNICAL
+  BUSINESS
+  PERSONAL
+  PROCESS
+  TEAM          // Dinâmica de time, co-fundadores, colaboração
+  GENERAL
+}
+
+// Estratégia de afterlife — o que pode se tornar este projeto
+enum AfterlifeStrategy {
+  REVIVAL         // Reviver como está
+  PIVOT           // Pivotar o conceito core
+  COMPONENT_REUSE // Reutilizar parte da tecnologia
+  NEW_FORM        // Transformar em algo completamente novo
+  ABSORBED        // Fundir em outro projeto existente
+  OPEN_SOURCE     // Abrir o código para a comunidade
+  TEACH_IT        // Transformar em conteúdo educacional
+  ARCHIVE         // Apenas preservar a memória
+}
+
+// Status atual de uma ideia de reencarnação
+enum RevivalStatus {
+  DREAMING      // Só uma ideia no papel
+  PLANNED       // Planejado com passos concretos
+  IN_PROGRESS   // Em andamento
+  REALIZED      // Concretizado com sucesso
+  ABANDONED     // A ideia de ressurreição também morreu
+}
+
+enum EventType {
+  BIRTH
+  MILESTONE
+  SETBACK
+  PIVOT       // Mudança de direção durante a vida do projeto
+  NEAR_MISS   // Quase sobreviveu ou quase morreu aqui
+  DEATH
+  AFTERMATH   // O que aconteceu depois da morte
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Core Models
+// ─────────────────────────────────────────────────────────────────
+
+model Project {
+  id   String @id @default(cuid())
+  slug String @unique
+
+  // Identity
+  name          String
+  slogan        String?
+  description   String? @db.Text
+  epitaph       String  @db.Text
+  coverImageUrl String? // URL opcional para imagem de capa
+
+  // Classification
+  type       ProjectType
+  stage      LifecycleStage
+  visibility Visibility     @default(PUBLIC)
+
+  // Death certificate
+  causeOfDeath          CauseOfDeath
+  emotionalWeight       EmotionalWeight
+  resurrectionPotential ResurrectionPotential
+
+  // Timeline
+  bornAt DateTime?
+  diedAt DateTime?
+
+  // Technical profile
+  techStack      String[]
+  targetAudience String?
+  hadRealUsers   Boolean  @default(false)
+  userCount      Int?
+
+  // Narrative fields
+  whatItWantedToBe    String? @db.Text
+  whatWentWrong       String? @db.Text
+  whatStillWorks      String? @db.Text
+  whatWasRepurposed   String? @db.Text
+  mostPromisingMoment String? @db.Text
+  momentOfReckoning   String? @db.Text
+  symptoms            String[]
+  dreams              String[]
+  farewellLetter      String? @db.Text
+
+  // Relations
+  tags               Tag[]
+  artifacts          Artifact[]
+  lessons            Lesson[]
+  reincarnationIdeas ReincarnationIdea[]
+  timeline           TimelineEvent[]
+
+  // Meta
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([slug])
+  @@index([type])
+  @@index([stage])
+  @@index([causeOfDeath])
+  @@index([resurrectionPotential])
+  @@index([visibility])
+}
+
+model Tag {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  projects Project[]
+}
+
+model Artifact {
+  id          String       @id @default(cuid())
+  projectId   String
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  type        ArtifactType
+  title       String
+  description String?      @db.Text
+  url         String?
+  filename    String?
+  order       Int          @default(0) // Para controlar a ordem de exibição
+  createdAt   DateTime     @default(now())
+
+  @@index([projectId])
+}
+
+model Lesson {
+  id        String         @id @default(cuid())
+  projectId String
+  project   Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title     String?        // Título opcional para exibição resumida
+  body      String         @db.Text
+  category  LessonCategory @default(GENERAL)
+  order     Int            @default(0)
+  createdAt DateTime       @default(now())
+
+  @@index([projectId])
+}
+
+model ReincarnationIdea {
+  id               String            @id @default(cuid())
+  projectId        String
+  project          Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title            String
+  description      String?           @db.Text
+  strategy         AfterlifeStrategy @default(NEW_FORM)
+  feasibilityScore Int               @default(5) // Escala 1-10
+  status           RevivalStatus     @default(DREAMING)
+  createdAt        DateTime          @default(now())
+
+  @@index([projectId])
+  @@index([status])
+}
+
+model TimelineEvent {
+  id          String    @id @default(cuid())
+  projectId   String
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  date        DateTime
+  title       String
+  description String?   @db.Text
+  eventType   EventType @default(MILESTONE)
+  order       Int       @default(0) // Para eventos no mesmo dia
+  createdAt   DateTime  @default(now())
+
+  @@index([projectId])
+}

@@ -1,26 +1,431 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,900;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600&display=swap");
 @import "tailwindcss";
+@config "../../tailwind.config.ts";
+/* ─── Keyframes ──────────────────────────────────────────────────────────────── */
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@layer base {
+  :root {
+    --background: 45 15% 94%;
+    --foreground: 260 15% 10%;
+    --card: 40 12% 90%;
+    --card-foreground: 260 15% 12%;
+    --popover: 40 12% 90%;
+    --popover-foreground: 260 15% 12%;
+    --primary: 38 42% 60%;
+    --primary-foreground: 260 15% 8%;
+    --secondary: 260 12% 85%;
+    --secondary-foreground: 260 15% 15%;
+    --muted: 260 8% 82%;
+    --muted-foreground: 260 8% 40%;
+    --accent: 38 42% 55%;
+    --accent-foreground: 260 15% 8%;
+    --destructive: 0 48% 38%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 260 10% 78%;
+    --input: 260 10% 78%;
+    --ring: 38 42% 55%;
+    --radius: 0.375rem;
+    --chart-1: 38 42% 60%;
+    --chart-2: 160 42% 35%;
+    --chart-3: 0 42% 38%;
+    --chart-4: 260 30% 50%;
+    --chart-5: 30 50% 45%;
+  }
+
+  .dark {
+    --background: 258 24% 3.5%;
+    --foreground: 38 22% 91%;
+    --card: 258 20% 6.5%;
+    --card-foreground: 38 18% 86%;
+    --popover: 258 22% 5%;
+    --popover-foreground: 38 22% 91%;
+    --primary: 38 52% 65%;
+    --primary-foreground: 258 28% 4%;
+    --secondary: 258 16% 12%;
+    --secondary-foreground: 38 16% 76%;
+    --muted: 258 14% 13%;
+    --muted-foreground: 38 10% 50%;
+    --accent: 38 48% 58%;
+    --accent-foreground: 258 28% 4%;
+    --destructive: 0 52% 36%;
+    --destructive-foreground: 38 22% 91%;
+    --border: 258 14% 16%;
+    --input: 258 16% 11%;
+    --ring: 38 52% 48%;
+    --chart-1: 38 52% 65%;
+    --chart-2: 160 42% 36%;
+    --chart-3: 0 50% 42%;
+    --chart-4: 270 30% 56%;
+    --chart-5: 30 44% 46%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings:
+      "kern" 1,
+      "liga" 1,
+      "calt" 1,
+      "ss01" 1;
+  }
+
+  /* Subtle grain overlay for the whole page */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.55;
+    mix-blend-mode: overlay;
+  }
+
+  ::selection {
+    background-color: rgba(201, 169, 110, 0.22);
+    color: #f0ece3;
+  }
+
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #050408;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #201e28;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #2e2b3d;
+  }
+
+  :focus-visible {
+    outline: 2px solid rgba(201, 169, 110, 0.55);
+    outline-offset: 3px;
+    border-radius: 3px;
+    transition: outline-offset 0.15s ease;
+  }
+}
+
+@layer components {
+  .font-serif {
+    font-family: "Playfair Display", Georgia, serif;
+  }
+
+  .divider-memorial {
+    @apply flex items-center gap-4 my-8;
+  }
+  .divider-memorial::before,
+  .divider-memorial::after {
+    content: "";
+    @apply flex-1 h-px bg-border;
+  }
+
+  /* ─── Premium memorial card ──────────────────────────────────────── */
+  .card-memorial {
+    @apply relative overflow-hidden;
+    border-radius: 3px;
+    background: linear-gradient(155deg, hsl(258, 20%, 8%) 0%, hsl(260, 24%, 5%) 55%, hsl(262, 20%, 7%) 100%);
+    border: 1px solid hsl(258, 14%, 15.5%);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.035),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+      0 4px 16px rgba(0, 0, 0, 0.5),
+      0 1px 3px rgba(0, 0, 0, 0.4);
+    transition:
+      border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+  }
+  .card-memorial:hover {
+    border-color: rgba(201, 169, 110, 0.28);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.048),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+      0 20px 60px rgba(0, 0, 0, 0.65),
+      0 6px 20px rgba(0, 0, 0, 0.45),
+      0 0 0 1px rgba(201, 169, 110, 0.07),
+      0 0 40px rgba(201, 169, 110, 0.025) inset;
+  }
+
+  /* ─── Epitaph: italic serif quotation ───────────────────────────── */
+  .epitaph {
+    font-family: "Playfair Display", Georgia, serif;
+    font-style: italic;
+    font-weight: 400;
+    color: #bfb9a8;
+    letter-spacing: 0.01em;
+    line-height: 1.65;
+  }
+
+  /* ─── Corner ornaments (applied to cards) ────────────────────────── */
+  .corner-ornament::before,
+  .corner-ornament::after {
+    content: "";
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-color: rgba(201, 169, 110, 0.22);
+    border-style: solid;
+    transition: border-color 0.35s ease;
+  }
+  .corner-ornament::before {
+    top: 10px;
+    left: 10px;
+    border-width: 1px 0 0 1px;
+  }
+  .corner-ornament::after {
+    bottom: 10px;
+    right: 10px;
+    border-width: 0 1px 1px 0;
+  }
+  .corner-ornament:hover::before,
+  .corner-ornament:hover::after {
+    border-color: rgba(201, 169, 110, 0.4);
+  }
+
+  /* ─── Animated underline for nav and prose links ─────────────────── */
+  .hover-underline-gold {
+    position: relative;
+  }
+  .hover-underline-gold::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: linear-gradient(90deg, #c9a96e, #e2c99a80);
+    transition: width 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .hover-underline-gold:hover::after {
+    width: 100%;
+  }
+
+  /* ─── Resurrection meter ──────────────────────────────────────────── */
+  .resurrection-track {
+    height: 2px;
+    border-radius: 9999px;
+    overflow: visible;
+    background: rgba(201, 169, 110, 0.08);
+    position: relative;
+  }
+  .resurrection-fill {
+    height: 100%;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, #6b5535 0%, #c9a96e 100%);
+    box-shadow: 0 0 8px rgba(201, 169, 110, 0.35);
+    transition: width 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  /* ─── Micro label above sections ─────────────────────────────────── */
+  .section-label {
+    font-family: "Inter", system-ui, sans-serif;
+    font-size: 0.625rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: rgba(201, 169, 110, 0.6);
+  }
+
+  /* ─── Ornamental horizontal rule ─────────────────────────────────── */
+  .divider-ornament {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .divider-ornament::before,
+  .divider-ornament::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(258, 14%, 16%, 1));
+  }
+  .divider-ornament::after {
+    background: linear-gradient(90deg, rgba(258, 14%, 16%, 1), transparent);
+  }
+}
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-33.333%);
+  }
+}
+
+@keyframes flicker {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scaleY(1);
+  }
+  20% {
+    opacity: 0.22;
+    transform: scaleY(0.97);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scaleY(1.02);
+  }
+  80% {
+    opacity: 0.3;
+    transform: scaleY(0.98);
+  }
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.12;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes grave-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(201, 169, 110, 0);
+    opacity: 0.5;
+  }
+  50% {
+    box-shadow: 0 0 16px 4px rgba(201, 169, 110, 0.12);
+    opacity: 1;
+  }
+}
+
+@layer utilities {
+  .animate-flicker {
+    animation: flicker 2.4s ease-in-out infinite;
+  }
+  .animate-breathe {
+    animation: breathe 4s ease-in-out infinite;
+  }
+  .animate-grave-pulse {
+    animation: grave-pulse 3s ease-in-out infinite;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2.4s infinite linear;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.04) 40%,
+      rgba(255, 255, 255, 0.07) 50%,
+      rgba(255, 255, 255, 0.04) 60%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+  }
+
+  .animate-float {
+    animation: float 4s ease-in-out infinite;
+  }
+
+  .card-hover-lift:hover {
+    transform: translateY(-3px);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .text-gold {
+    color: #c9a96e;
+  }
+  .text-parchment {
+    color: #f0ece3;
+  }
+  .text-parchment-muted {
+    color: #c4beaf;
+  }
+  .border-gold-subtle {
+    border-color: rgba(201, 169, 110, 0.2);
+  }
+  .bg-gold-faint {
+    background-color: rgba(201, 169, 110, 0.06);
+  }
+  /* Atmospheric top glow for sections */
+  .glow-top-gold {
+    background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(201, 169, 110, 0.07) 0%, transparent 70%);
+  }
+  /* Hairline gold separator */
+  .line-gold {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201, 169, 110, 0.18), transparent);
+  }
+}
+
+/* ─── Date input dark mode ──────────────────────────────────────────────── */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.55) sepia(0.15) hue-rotate(10deg);
+  opacity: 0.35;
+  cursor: pointer;
+}
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 0.65;
+}
+
+/* ─── Marquee scroll animation ─────────────────────────────────────────── */
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-33.333%);
+  }
 }
