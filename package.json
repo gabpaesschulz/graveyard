@@ -12,7 +12,7 @@
     "db:push": "prisma db push",
     "db:seed": "npx tsx prisma/seed.ts",
     "db:studio": "prisma studio",
-    "postinstall": "node scripts/patch-prisma.mjs"
+    "postinstall": "prisma generate && node scripts/patch-prisma.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
