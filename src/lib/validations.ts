@@ -1,24 +1,36 @@
 import { z } from "zod";
-import {
-  ProjectType,
-  LifecycleStage,
-  CauseOfDeath,
-  EmotionalWeight,
-  ResurrectionPotential,
-  LessonCategory,
-  AfterlifeStrategy,
-} from "@prisma/client";
+
+const ProjectType = z.enum([
+  "MICRO_SAAS", "PERSONAL_APP", "STARTUP", "GAME", "BLOG", "TOOL",
+  "EXTENSION", "COMMUNITY", "LIBRARY", "API", "DESIGN_PROJECT", "CONTENT", "OTHER",
+]);
+const LifecycleStage = z.enum([
+  "IDEA", "SKETCH", "PROTOTYPE", "MVP", "BETA", "LAUNCHED", "HIATUS",
+]);
+const CauseOfDeath = z.enum([
+  "NO_TIME", "TOO_COMPLEX", "LOST_INTEREST", "NO_MONEY", "SCOPE_CREEP",
+  "NO_MARKET", "BAD_TIMING", "BURNOUT", "WRONG_TECH", "LIFE_CHANGE",
+  "BETTER_ALTERNATIVE", "COMPETITION", "TECHNICAL_DEBT", "TEAM_SPLIT", "ACQUIRED", "OTHER",
+]);
+const EmotionalWeight = z.enum([
+  "LIGHT", "NOSTALGIC", "HEAVY", "HAUNTING", "LIBERATING", "BITTERSWEET",
+]);
+const ResurrectionPotential = z.enum(["NONE", "LOW", "MEDIUM", "HIGH", "INEVITABLE"]);
+const LessonCategory = z.enum(["TECHNICAL", "BUSINESS", "PERSONAL", "PROCESS", "TEAM", "GENERAL"]);
+const AfterlifeStrategy = z.enum([
+  "REVIVAL", "PIVOT", "COMPONENT_REUSE", "NEW_FORM", "ABSORBED", "OPEN_SOURCE", "TEACH_IT", "ARCHIVE",
+]);
 
 export const createProjectSchema = z.object({
   name: z.string().min(1, "Dê um nome a este projeto").max(100),
   slogan: z.string().max(200).optional(),
   description: z.string().max(2000).optional(),
   epitaph: z.string().min(10, "O epitáfio precisa de pelo menos 10 caracteres").max(500, "Um epitáfio deve ser breve"),
-  type: z.nativeEnum(ProjectType),
-  stage: z.nativeEnum(LifecycleStage),
-  causeOfDeath: z.nativeEnum(CauseOfDeath),
-  emotionalWeight: z.nativeEnum(EmotionalWeight),
-  resurrectionPotential: z.nativeEnum(ResurrectionPotential),
+  type: ProjectType,
+  stage: LifecycleStage,
+  causeOfDeath: CauseOfDeath,
+  emotionalWeight: EmotionalWeight,
+  resurrectionPotential: ResurrectionPotential,
   bornAt: z.string().optional(),
   diedAt: z.string().optional(),
   techStack: z.array(z.string()).optional().default([]),
@@ -39,7 +51,7 @@ export const createProjectSchema = z.object({
     .array(
       z.object({
         body: z.string().min(1).max(1000),
-        category: z.nativeEnum(LessonCategory),
+        category: LessonCategory,
       }),
     )
     .optional()
@@ -49,7 +61,7 @@ export const createProjectSchema = z.object({
       z.object({
         title: z.string().min(1).max(200),
         description: z.string().max(1000).optional(),
-        strategy: z.nativeEnum(AfterlifeStrategy),
+        strategy: AfterlifeStrategy,
         feasibilityScore: z.number().int().min(1).max(10),
       }),
     )
