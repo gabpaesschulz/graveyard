@@ -22,7 +22,14 @@ interface RotatingQuoteProps {
 }
 
 export function RotatingQuote({ className = "", interval = 6000 }: RotatingQuoteProps) {
-  const [index, setIndex] = useState(() => Math.floor(Math.random() * EPITAPH_QUOTES.length));
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const init = setTimeout(() => {
+      setIndex(Math.floor(Math.random() * EPITAPH_QUOTES.length));
+    }, 0);
+    return () => clearTimeout(init);
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
