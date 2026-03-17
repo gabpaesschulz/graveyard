@@ -4,7 +4,7 @@ import { AnalyticsClient } from "./analytics-client";
 import { CAUSE_LABELS, STAGE_LABELS, TYPE_LABELS, EMOTIONAL_LABELS, RESURRECTION_LABELS } from "@/lib/utils";
 import type { CauseOfDeath, LifecycleStage, ProjectType, EmotionalWeight, ResurrectionPotential } from "@/types";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Necrologia · Graveyard",

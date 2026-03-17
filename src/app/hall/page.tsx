@@ -3,7 +3,7 @@ import { Visibility } from "@prisma/client";
 import { MemorialHallClient } from "./memorial-hall-client";
 import type { Metadata } from "next";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Salão Memorial · Graveyard",

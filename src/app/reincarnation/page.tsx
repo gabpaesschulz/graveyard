@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { Visibility } from "@prisma/client";
 import { ResurrectionClient } from "./resurrection-client";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Reencarnação · Graveyard",
