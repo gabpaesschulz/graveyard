@@ -11,14 +11,17 @@ export const metadata = {
 };
 
 export default async function ReincarnationPage() {
-  const projects = await prisma.project.findMany({
-    where: {
-      visibility: Visibility.PUBLIC,
-      resurrectionPotential: { in: ["HIGH", "INEVITABLE"] },
-    },
-    include: { reincarnationIdeas: true, tags: true },
-    orderBy: { resurrectionPotential: "desc" },
-  });
-
-  return <ResurrectionClient projects={projects} />;
+  try {
+    const projects = await prisma.project.findMany({
+      where: {
+        visibility: Visibility.PUBLIC,
+        resurrectionPotential: { in: ["HIGH", "INEVITABLE"] },
+      },
+      include: { reincarnationIdeas: true, tags: true },
+      orderBy: { resurrectionPotential: "desc" },
+    });
+    return <ResurrectionClient projects={projects} />;
+  } catch {
+    return <ResurrectionClient projects={[]} />;
+  }
 }

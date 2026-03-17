@@ -11,12 +11,15 @@ export const metadata: Metadata = {
 };
 
 export default async function HallPage() {
-  const projects = await prisma.project.findMany({
-    where: { visibility: Visibility.PUBLIC },
-    include: { tags: true },
-    orderBy: { createdAt: "desc" },
-  });
-
-  return <MemorialHallClient projects={projects} />;
+  try {
+    const projects = await prisma.project.findMany({
+      where: { visibility: Visibility.PUBLIC },
+      include: { tags: true },
+      orderBy: { createdAt: "desc" },
+    });
+    return <MemorialHallClient projects={projects} />;
+  } catch {
+    return <MemorialHallClient projects={[]} />;
+  }
 }
 
